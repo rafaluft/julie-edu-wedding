@@ -584,27 +584,6 @@ a {
     color: inherit;
     transition: all 200ms ease;
   }
-  .pix-box-link {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    cursor: pointer;
-  }
-  .pix-box button,
-  .pix-actions {
-    position: relative;
-    z-index: 2;
-  }
-  .pix-box:hover {
-    background: #4b2436;
-    border-color: #4b2436;
-  }
-  .pix-box:hover .label,
-  .pix-box:hover .key,
-  .pix-box:hover button,
-  .pix-box:hover .pix-gmail-link {
-    color: #f6e5ba;
-  }
   .pix-box .label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.35em; color: var(--gold); }
   .pix-box .key {
     display: block;
@@ -625,8 +604,7 @@ a {
     gap: 0.5rem;
     flex-wrap: wrap;
   }
-  .pix-box button,
-  .pix-box .pix-gmail-link {
+  .pix-box button {
     background: none;
     border: 0;
     padding: 0;
@@ -638,13 +616,116 @@ a {
     text-decoration: none;
     font-family: inherit;
   }
-  .pix-box button:hover,
-  .pix-box .pix-gmail-link:hover { color: var(--foreground); }
+  .pix-box button:hover { color: var(--foreground); }
   .pix-box .pix-actions-sep {
     font-size: 0.65rem;
     color: var(--muted-foreground);
   }
-  .pix-box:hover .pix-actions-sep { color: #f6e5ba; }
+
+  /* ---------- Modal: Recado aos noivos ---------- */
+  .recado-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: rgba(20, 14, 10, 0.72);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+  }
+  .recado-overlay.is-open { display: flex; }
+  .recado-card {
+    position: relative;
+    width: 100%;
+    max-width: 26rem;
+    background: var(--cream);
+    border: 1px solid var(--wine);
+    padding: 2.5rem 2rem 2.25rem;
+    text-align: center;
+  }
+  .recado-close {
+    position: absolute;
+    top: 0.9rem;
+    right: 0.9rem;
+    background: none;
+    border: 0;
+    cursor: pointer;
+    color: var(--muted-foreground);
+    font-size: 1rem;
+    line-height: 1;
+    padding: 0.4rem;
+  }
+  .recado-close:hover { color: var(--wine); }
+  .recado-card .eyebrow { color: var(--gold); }
+  .recado-title {
+    margin-top: 0.75rem;
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    font-style: italic;
+    color: var(--foreground);
+  }
+  .recado-form { margin-top: 1.5rem; text-align: left; }
+  .recado-form label {
+    display: block;
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+    margin-bottom: 0.5rem;
+  }
+  .recado-form label:not(:first-child) { margin-top: 1.25rem; }
+  .recado-form input,
+  .recado-form textarea {
+    width: 100%;
+    padding: 0.7rem 0.75rem;
+    background: transparent;
+    border: 1px solid var(--wine);
+    font-family: inherit;
+    font-size: 0.9rem;
+    color: var(--foreground);
+    box-sizing: border-box;
+  }
+  .recado-form textarea { resize: vertical; }
+  .recado-form input:focus,
+  .recado-form textarea:focus { outline: none; border-color: var(--gold); }
+  .recado-submit {
+    margin-top: 1.75rem;
+    width: 100%;
+    padding: 0.9rem;
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--foreground);
+    background: transparent;
+    border: 1px solid var(--wine);
+    cursor: pointer;
+    transition: all 300ms ease;
+  }
+  .recado-submit:hover { background: #4b2436; border-color: #4b2436; color: #f6e5ba; }
+  .recado-submit[disabled] { opacity: 0.6; cursor: default; }
+  .recado-form-msg {
+    margin-top: 0.9rem;
+    padding: 0.6rem 0.75rem;
+    font-size: 0.68rem;
+    line-height: 1.5;
+    border: 1px solid var(--wine);
+    color: var(--foreground);
+    background: color-mix(in oklch, var(--wine) 8%, transparent);
+  }
+  .recado-form-msg.is-error { border-color: #b5484a; color: #8a2f31; }
+  .recado-thanks-title {
+    margin-top: 1.1rem;
+    font-family: var(--font-serif);
+    font-size: 1.4rem;
+    font-style: italic;
+    color: var(--foreground);
+  }
+  .recado-thanks-text {
+    margin-top: 0.85rem;
+    font-size: 0.85rem;
+    line-height: 1.75;
+    color: var(--muted-foreground);
+  }
 
   footer {
     position: relative;
@@ -1170,13 +1251,12 @@ a {
     </div>
 
     <div class="pix-box" id="pixBox">
-      <a class="pix-box-link" href="mailto:julieedu@gmail.com?subject=Presente%20de%20casamento%20-%20Pix%20enviado&body=Ol%C3%A1%2C%20Julie%20e%20Eduardo%21%0A%0AAcabei%20de%20enviar%20um%20presente%20para%20voc%C3%AAs%20via%20Pix.%20Parab%C3%A9ns%20pelo%20casamento%20e%20um%20brinde%20a%20essa%20nova%20fase%21%20%E2%9D%A4%EF%B8%8F%0A%0ACom%20carinho%2C%0A%5Bseu%20nome%5D" target="_top" aria-label="Enviar email"></a>
       <p class="label">Chave Pix</p>
       <p class="key" id="pixKey">julieedu@gmail.com</p>
       <div class="pix-actions">
         <button id="copyPix">Copiar chave</button>
         <span class="pix-actions-sep">·</span>
-        <a class="pix-gmail-link" href="https://mail.google.com/mail/?view=cm&fs=1&to=julieedu@gmail.com&su=Presente+de+casamento+-+Pix+enviado&body=Ol%C3%A1%2C+Julie+e+Eduardo%21%0A%0AAcabei+de+enviar+um+presente+para+voc%C3%AAs+via+Pix.+Parab%C3%A9ns+pelo+casamento+e+um+brinde+a+essa+nova+fase%21+%E2%9D%A4%EF%B8%8F%0A%0ACom+carinho%2C%0A%5Bseu+nome%5D" target="_blank" rel="noopener noreferrer">Abrir no Gmail</a>
+        <button type="button" id="pixRecadoBtn">Recado aos noivos</button>
       </div>
     </div>
   </div>
@@ -1187,6 +1267,31 @@ a {
   <span class="logo-mark footer-logo" role="img" aria-label="Julie &amp; Edu"></span>
   <p class="date">26 . 11 . 2026</p>
 </footer>
+
+<div class="recado-overlay" id="recadoOverlay">
+  <div class="recado-card">
+    <button type="button" class="recado-close" id="recadoClose" aria-label="Fechar">✕</button>
+
+    <div id="recadoStepForm">
+      <p class="eyebrow">Chave Pix</p>
+      <h3 class="recado-title">Recado aos noivos</h3>
+      <form class="recado-form" id="recadoForm">
+        <label for="recadoNome">Seu nome</label>
+        <input type="text" id="recadoNome" placeholder="Como você quer ser identificado" />
+        <label for="recadoMensagem">Sua mensagem</label>
+        <textarea id="recadoMensagem" placeholder="Escreva uma mensagem para o casal" rows="4"></textarea>
+        <p class="recado-form-msg" id="recadoFormMsg" style="display:none;"></p>
+        <button type="submit" class="recado-submit" id="recadoSubmitBtn">Enviar recado</button>
+      </form>
+    </div>
+
+    <div id="recadoStepThanks" style="display:none;">
+      <p class="eyebrow">Chave Pix</p>
+      <h3 class="recado-thanks-title">Muito obrigado!</h3>
+      <p class="recado-thanks-text">Recado enviado! Julie e Eduardo vão adorar ler. 💛</p>
+    </div>
+  </div>
+</div>
 
 <!-- ============ PAINEL DE TESTE (remover ao publicar a versão final) ============ -->
 <button id="testPanelToggle" type="button">Opções ▾</button>
@@ -1327,6 +1432,79 @@ a {
     e.stopPropagation();
     const key = document.getElementById('pixKey').textContent;
     navigator.clipboard?.writeText(key);
+  });
+
+  // ---------- Recado aos noivos (chave Pix) ----------
+  const RECADO_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbxoTZadvo_6CHVDDqPqvNy8alTAlMCOPRd-ygmDgZijvMgvce_YoU2MXP3o8P_ilWSoPQ/exec';
+
+  const recadoOverlay = document.getElementById('recadoOverlay');
+  const recadoStepForm = document.getElementById('recadoStepForm');
+  const recadoStepThanks = document.getElementById('recadoStepThanks');
+  const pixRecadoBtn = document.getElementById('pixRecadoBtn');
+  const recadoClose = document.getElementById('recadoClose');
+  const recadoForm = document.getElementById('recadoForm');
+  const recadoNomeInput = document.getElementById('recadoNome');
+  const recadoMensagemInput = document.getElementById('recadoMensagem');
+  const recadoFormMsg = document.getElementById('recadoFormMsg');
+  const recadoSubmitBtn = document.getElementById('recadoSubmitBtn');
+
+  function openRecado() {
+    recadoNomeInput.value = '';
+    recadoMensagemInput.value = '';
+    recadoFormMsg.style.display = 'none';
+    recadoSubmitBtn.disabled = false;
+    recadoSubmitBtn.textContent = 'Enviar recado';
+    recadoStepForm.style.display = 'block';
+    recadoStepThanks.style.display = 'none';
+    recadoOverlay.classList.add('is-open');
+  }
+  function closeRecado() {
+    recadoOverlay.classList.remove('is-open');
+  }
+
+  pixRecadoBtn.addEventListener('click', openRecado);
+  recadoClose.addEventListener('click', closeRecado);
+  recadoOverlay.addEventListener('click', (e) => {
+    if (e.target === recadoOverlay) closeRecado();
+  });
+
+  function showRecadoMsg(text, isError) {
+    recadoFormMsg.textContent = text;
+    recadoFormMsg.classList.toggle('is-error', !!isError);
+    recadoFormMsg.style.display = 'block';
+  }
+
+  recadoForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const nome = recadoNomeInput.value.trim();
+    const recado = recadoMensagemInput.value.trim();
+
+    if (!nome) {
+      showRecadoMsg('Por favor, preencha seu nome antes de enviar.', true);
+      recadoNomeInput.focus();
+      return;
+    }
+    recadoFormMsg.style.display = 'none';
+    recadoSubmitBtn.disabled = true;
+    recadoSubmitBtn.textContent = 'Enviando...';
+
+    fetch(RECADO_WEBAPP_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ nome: nome, recado: recado, presente: 'Recado (Pix)' })
+    })
+      .then(() => {
+        recadoStepForm.style.display = 'none';
+        recadoStepThanks.style.display = 'block';
+      })
+      .catch(() => {
+        showRecadoMsg('Não foi possível enviar agora. Verifique sua conexão e tente novamente.', true);
+      })
+      .finally(() => {
+        recadoSubmitBtn.disabled = false;
+        recadoSubmitBtn.textContent = 'Enviar recado';
+      });
   });
 
   // ---------- Contagem regressiva ----------
