@@ -252,6 +252,70 @@ a {
     color: var(--foreground);
   }
 
+  /* ---------- Botão: layout "Presentes Noivos" ----------
+     Padrão (até telas largas): bloco centrado, no fluxo normal, acima
+     da grade de presentes. Em telas largas (1024px+), sai da coluna
+     central e fica fixo no vão esquerdo da seção, longe das caixas. */
+  .side-toggle {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin: 0 auto 2rem;
+    background: var(--cream);
+    border: 1px solid var(--wine);
+    padding: 0.75rem 1.1rem;
+    cursor: pointer;
+    font-family: var(--font-sans);
+  }
+  @media (min-width: 1024px) {
+    .side-toggle {
+      position: absolute;
+      left: 2rem;
+      top: 53rem;
+      transform: translateY(-50%);
+      margin: 0;
+    }
+  }
+  .side-toggle-label {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    line-height: 1.4;
+    color: var(--muted-foreground);
+    text-align: center;
+  }
+  .side-toggle-track {
+    position: relative;
+    width: 2.9rem;
+    height: 1.6rem;
+    border-radius: 999px;
+    background: var(--border);
+    transition: background 200ms ease;
+  }
+  .side-toggle-thumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 1.2rem;
+    height: 1.2rem;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    transition: transform 200ms ease;
+  }
+  .side-toggle[aria-pressed="true"] .side-toggle-track { background: #4b2436; }
+  .side-toggle[aria-pressed="true"] .side-toggle-thumb { transform: translateX(1.3rem); }
+  @media (min-width: 640px) {
+    .side-toggle { padding: 1rem 0.75rem; gap: 0.7rem; }
+    .side-toggle-track { width: 3.4rem; height: 1.85rem; }
+    .side-toggle-thumb { width: 1.45rem; height: 1.45rem; }
+    .side-toggle[aria-pressed="true"] .side-toggle-thumb { transform: translateX(1.55rem); }
+  }
+
   /* ---------- Sections ---------- */
   section { }
 
@@ -385,6 +449,17 @@ a {
     min-height: 100vh;
     overflow: hidden;
     border: none;
+  }
+  /* Quadrado fino na cor de fundo do site, alguns centímetros para dentro
+     da borda da foto (a foto continua de ponta a ponta, só ganha essa
+     linha por cima). */
+  .hero-blank-wrap::after {
+    content: "";
+    position: absolute;
+    inset: 2.5rem;
+    border: 1px solid var(--background);
+    z-index: 1;
+    pointer-events: none;
   }
   @media (min-width: 640px) {
     .hero-blank-wrap { min-height: 100vh; }
@@ -571,10 +646,233 @@ a {
   .gift-card .name { margin-top: 1rem; font-family: var(--font-serif); font-size: 1.5rem; }
   .gift-card .go { margin-top: 1.5rem; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.35em; color: var(--gold); }
 
+  /* ---------- Presentes avulsos: caixa com 9 opções, mesmo switcher
+       "Trocar" do teste-caixa.html (Modoeditor), adaptado às cores/fontes
+       do site. Opção 08 = visual original ("Painel centralizado"),
+       mantida como padrão ao abrir o site. ---------- */
+  .cash-gifts { margin-top: 1.5rem; display: none; }
+  html[data-noivos-layout="on"] .cash-gifts { display: block; }
+
+  .gift-switcher { display: none; position: relative; justify-content: center; margin: 0 auto 1.5rem; }
+  html[data-noivos-layout="on"] .gift-switcher { display: flex; }
+  @media (min-width: 1024px) {
+    html[data-noivos-layout="on"] .gift-switcher {
+      display: block;
+      position: absolute;
+      left: 2rem;
+      top: 77.4rem;
+      transform: translateY(-50%);
+      margin: 0;
+      /* .gifts-section .wrap tem z-index:1 (fica acima do fundo com
+         treliça); sem isso o menu abria por baixo da caixa Pix/cards. */
+      z-index: 5;
+    }
+    /* Botão fica coladinho na borda esquerda nessa posição, então o menu
+       abre alinhado à esquerda (pra direita) em vez de centralizado,
+       senão metade dele fica fora da tela. */
+    html[data-noivos-layout="on"] .gift-switcher .gift-menu {
+      left: 0;
+      transform: none;
+      top: auto;
+      bottom: calc(100% + 0.5rem);
+    }
+  }
+  .gift-trocar {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    background: var(--cream);
+    border: 1px solid var(--wine);
+    font-family: var(--font-sans);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--foreground);
+    cursor: pointer;
+  }
+  .gift-trocar svg { width: 10px; height: 10px; transition: transform 180ms ease; }
+  .gift-trocar[aria-expanded="true"] svg { transform: rotate(180deg); }
+  .gift-menu {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--cream);
+    border: 1px solid var(--wine);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 17rem;
+    max-width: 84vw;
+    max-height: 20rem;
+    overflow-y: auto;
+    z-index: 5;
+    padding: 0.4rem;
+    box-shadow: 0 16px 32px -18px rgba(0,0,0,0.35);
+  }
+  .gift-menu[hidden] { display: none !important; }
+  .gift-menu button {
+    all: unset;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+    padding: 0.55rem 0.7rem;
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    color: var(--muted-foreground);
+    cursor: pointer;
+  }
+  .gift-menu button:hover, .gift-menu button:focus-visible { background: var(--background); color: var(--foreground); }
+  .gift-menu button[aria-checked="true"] { color: var(--foreground); font-weight: 600; }
+  .gift-menu button[aria-checked="true"]::after { content: "✓"; color: var(--gold); }
+  .gift-hint {
+    font-size: 0.72rem;
+    color: var(--muted-foreground);
+    text-align: center;
+    max-width: 34ch;
+    margin: 0.85rem auto 0;
+    min-height: 1.4em;
+  }
+
+  .cash-gift-grid {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.5rem;
+  }
+  .cash-gift-grid .gift { width: auto; flex: 1 1 100%; }
+  @media (min-width: 640px) {
+    .cash-gift-grid .gift { flex: 0 1 calc(33.333% - 1rem); }
+  }
+
+  /* Estrutura base, comum a todas as opções */
+  .gift {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    background: var(--cream);
+    border: 1px solid var(--wine);
+    transition: border-color 240ms ease, transform 240ms ease, background 240ms ease;
+  }
+  .gift .gvisual { position: relative; overflow: hidden; aspect-ratio: 4/3; background: var(--cream); }
+  .gift .gvisual::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: var(--trellis-img);
+    background-repeat: repeat;
+    background-size: 32px 32px;
+    transition: transform 500ms ease;
+  }
+  .gift .gbody { padding: 1.3rem 1.2rem 1.4rem; display: flex; flex-direction: column; flex: 1; }
+  .gift .gcat { margin: 0; font-family: var(--font-sans); font-size: 0.6rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted-foreground); transition: color 240ms ease; }
+  .gift .gname { margin: 0.55rem 0 0; font-family: var(--font-serif); font-style: italic; font-size: 1.2rem; color: var(--foreground); transition: color 240ms ease; }
+  .gift .gdesc { margin: 0.55rem 0 0; font-size: 0.8rem; line-height: 1.6; color: var(--muted-foreground); opacity: 0.9; flex: 1; transition: color 240ms ease; }
+  .gift .gfooter { margin-top: 1.1rem; display: flex; align-items: center; justify-content: space-between; gap: 0.85rem; }
+  .gift .gprice { margin: 0; font-family: var(--font-serif); font-size: 1rem; color: var(--foreground); transition: color 240ms ease; }
+  .gift .gprice small { display: block; font-family: var(--font-sans); font-size: 0.55rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted-foreground); opacity: 0.85; }
+  .gift .ggo {
+    all: unset;
+    box-sizing: border-box;
+    padding: 0.55rem 1rem;
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #f6e5ba;
+    background: #4b2436;
+    border: 1px solid #4b2436;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity 200ms ease;
+    display: inline-block;
+  }
+  .gift .ggo:hover { opacity: 0.82; }
+
+  /* 01 · Cartão R&G: foto com moldura interna e zoom leve */
+  [data-gift-style="1"] .gift { position: relative; }
+  [data-gift-style="1"] .gift::before { content: ""; position: absolute; inset: 7px; border: 1px solid transparent; pointer-events: none; transition: border-color 250ms ease; z-index: 2; }
+  [data-gift-style="1"] .gift:hover { border-color: #4b2436; transform: translateY(-3px); }
+  [data-gift-style="1"] .gift:hover::before { border-color: var(--wine); }
+  [data-gift-style="1"] .gift:hover .gvisual::before { transform: scale(1.045); }
+
+  /* 02 · Painel sem foto, preenche ao passar o mouse */
+  [data-gift-style="2"] .gift .gvisual { display: none; }
+  [data-gift-style="2"] .gift .gbody { padding: 1.6rem 1.4rem; }
+  [data-gift-style="2"] .gift:hover { background: #4b2436; border-color: #4b2436; }
+  [data-gift-style="2"] .gift:hover .gcat, [data-gift-style="2"] .gift:hover .gname, [data-gift-style="2"] .gift:hover .gdesc, [data-gift-style="2"] .gift:hover .gprice, [data-gift-style="2"] .gift:hover .gprice small { color: #f6e5ba; }
+  [data-gift-style="2"] .gift:hover .ggo { background: var(--cream); border-color: var(--cream); color: #4b2436; }
+
+  /* 03 · Medalhão circular, conteúdo centralizado */
+  [data-gift-style="3"] .gift { align-items: center; text-align: center; border: none; background: transparent; }
+  [data-gift-style="3"] .gift .gvisual { width: 150px; aspect-ratio: 1; border-radius: 50%; border: 1px solid var(--wine); transition: border-color 240ms ease, transform 240ms ease; }
+  [data-gift-style="3"] .gift .gbody { align-items: center; }
+  [data-gift-style="3"] .gift .gfooter { flex-direction: column; gap: 0.6rem; }
+  [data-gift-style="3"] .gift:hover .gvisual { border-color: #4b2436; transform: scale(1.04); }
+
+  /* 04 · Bilhete de cantos recortados */
+  [data-gift-style="4"] .gift { clip-path: polygon(14px 0,calc(100% - 14px) 0,100% 14px,100% calc(100% - 14px),calc(100% - 14px) 100%,14px 100%,0 calc(100% - 14px),0 14px); }
+  [data-gift-style="4"] .gift:hover { background: #4b2436; border-color: #4b2436; }
+  [data-gift-style="4"] .gift:hover .gcat, [data-gift-style="4"] .gift:hover .gname, [data-gift-style="4"] .gift:hover .gdesc, [data-gift-style="4"] .gift:hover .gprice, [data-gift-style="4"] .gift:hover .gprice small { color: #f6e5ba; }
+
+  /* 05 · Postal, borda tracejada */
+  [data-gift-style="5"] .gift { border: 2px dashed var(--wine); }
+  [data-gift-style="5"] .gift:hover { border-color: #4b2436; }
+
+  /* 06 · Divisor em onda entre foto e corpo */
+  [data-gift-style="6"] .gift .gvisual { overflow: visible; }
+  [data-gift-style="6"] .gift .gbody { position: relative; margin-top: -13px; background: var(--cream); clip-path: polygon(0 13px,8% 0,16% 13px,24% 0,32% 13px,40% 0,48% 13px,56% 0,64% 13px,72% 0,80% 13px,88% 0,96% 13px,100% 0,100% 100%,0 100%); padding-top: 1.7rem; }
+  [data-gift-style="6"] .gift:hover { border-color: #4b2436; }
+
+  /* 07 · Minimalista: sem borda, sublinhado no nome */
+  [data-gift-style="7"] .gift { border: none; background: transparent; }
+  [data-gift-style="7"] .gift .gvisual { border-radius: 4px; }
+  [data-gift-style="7"] .gift .gname { position: relative; display: inline-block; }
+  [data-gift-style="7"] .gift .gname::after { content: ""; position: absolute; left: 0; bottom: -3px; width: 0; height: 1px; background: #4b2436; transition: width 260ms ease; }
+  [data-gift-style="7"] .gift:hover .gname::after { width: 100%; }
+  [data-gift-style="7"] .gift .ggo { background: transparent; color: #4b2436; border-color: #4b2436; }
+  [data-gift-style="7"] .gift:hover .ggo { background: #4b2436; color: #f6e5ba; }
+
+  /* 08 · Painel centralizado (padrão do site) */
+  [data-gift-style="8"] .gift { text-align: center; padding: 2.5rem 2rem; }
+  [data-gift-style="8"] .gift .gvisual { display: none; }
+  [data-gift-style="8"] .gift .gbody { padding: 0; align-items: center; }
+  [data-gift-style="8"] .gift .gname { margin-top: 1rem; font-family: var(--font-serif); font-style: normal; font-weight: 600; font-size: 1.5rem; }
+  [data-gift-style="8"] .gift .gdesc { margin-top: 0.75rem; font-size: 0.85rem; line-height: 1.5; text-align: center; }
+  [data-gift-style="8"] .gift .gfooter { flex-direction: column; align-items: center; gap: 0; margin-top: 1.25rem; }
+  [data-gift-style="8"] .gift .gprice { margin-top: 0; font-size: 0.65rem; letter-spacing: 0.25em; text-transform: uppercase; }
+  [data-gift-style="8"] .gift .gprice small { display: block; font-size: inherit; letter-spacing: inherit; opacity: 1; }
+  [data-gift-style="8"] .gift .gprice strong { display: block; margin-top: 0.3rem; font-family: var(--font-serif); font-weight: 600; font-size: 1.15rem; text-transform: none; letter-spacing: normal; }
+  [data-gift-style="8"] .gift .ggo { margin-top: 1.5rem; background: none; border: 0; padding: 0; color: var(--gold); }
+  [data-gift-style="8"] .gift:hover { background: #4b2436; border-color: #4b2436; }
+  [data-gift-style="8"] .gift:hover .gcat, [data-gift-style="8"] .gift:hover .gname, [data-gift-style="8"] .gift:hover .gdesc, [data-gift-style="8"] .gift:hover .gprice, [data-gift-style="8"] .gift:hover .gprice small, [data-gift-style="8"] .gift:hover .ggo { color: #f6e5ba; }
+
+  /* 09 · Foto circular (paleta própria, como o raqueleguga.com.br) */
+  [data-gift-style="9"] .gift { background: #fffdf3; border-color: rgba(74,18,20,0.12); }
+  [data-gift-style="9"] .gift:hover { border-color: #5c2a2c; transform: translateY(-3px); }
+  [data-gift-style="9"] .gift .gvisual { position: relative; aspect-ratio: 1/1; overflow: visible; background: none; }
+  [data-gift-style="9"] .gift .gvisual::before { content: ""; position: absolute; inset: 21%; border-radius: 50%; background-image: var(--trellis-img); background-repeat: repeat; background-size: 24px 24px; background-color: #f2ecd4; transition: transform 500ms ease; }
+  [data-gift-style="9"] .gift:hover .gvisual::before { transform: scale(1.06); }
+  [data-gift-style="9"] .gift .gbody { padding: 1.5rem 1.4rem 1.6rem; }
+  [data-gift-style="9"] .gift .gcat { margin-top: 0; font-family: var(--font-sans); font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; color: #80595b; }
+  [data-gift-style="9"] .gift .gname { margin-top: 0.6rem; font-family: var(--font-serif); font-style: italic; font-weight: 400; font-size: 1.3rem; color: #4a1214; }
+  [data-gift-style="9"] .gift .gdesc { margin-top: 0.65rem; font-family: var(--font-sans); font-weight: 300; font-size: 0.82rem; line-height: 1.65; color: #9b7d7e; }
+  [data-gift-style="9"] .gift .gfooter { margin-top: 1.35rem; gap: 1rem; }
+  [data-gift-style="9"] .gift .gprice { margin-top: 0; font-family: var(--font-serif); font-size: 1.15rem; color: #896566; }
+  [data-gift-style="9"] .gift .gprice small { font-family: var(--font-sans); font-size: 0.55rem; letter-spacing: 0.16em; text-transform: uppercase; color: #9b7d7e; opacity: 1; }
+  [data-gift-style="9"] .gift .ggo { padding: 0.6rem 1.1rem; font-family: "Cinzel", serif; font-size: 0.58rem; letter-spacing: 0.18em; text-transform: uppercase; color: #f9f6ee; background: #5c2a2c; border: 1px solid #5c2a2c; }
+  [data-gift-style="9"] .gift:hover .ggo { background: transparent; color: #80595b; }
+
   .pix-box {
     position: relative;
     display: block;
-    margin: 2.5rem auto 0;
+    margin: 1.5rem auto 0;
     max-width: 100%;
     border: 1px solid var(--wine);
     background: var(--cream);
@@ -725,6 +1023,62 @@ a {
     font-size: 0.85rem;
     line-height: 1.75;
     color: var(--muted-foreground);
+  }
+
+  /* ---------- Modal: carrinho / Pix do presente (Presentear) ----------
+     Mesmo fluxo do raqueleguga.com.br (carrinho -> QR Pix + recado),
+     adaptado às cores, fontes e caixas do site (reaproveita .recado-*). */
+  .gift-cart-price {
+    margin-top: 0.6rem;
+    font-family: var(--font-serif);
+    font-size: 1.15rem;
+    color: var(--foreground);
+  }
+  .gift-cart-remove {
+    display: inline-block;
+    margin-top: 0.75rem;
+    background: none;
+    border: 0;
+    padding: 0;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--muted-foreground);
+    cursor: pointer;
+  }
+  .gift-cart-remove:hover { color: var(--wine); }
+  .gift-qr {
+    margin: 1.5rem auto 0;
+    width: 12rem;
+    padding: 0.75rem;
+    background: #fff;
+    border: 1px solid var(--wine);
+  }
+  .gift-qr svg { display: block; width: 100%; height: auto; }
+  .gift-copy-pix {
+    display: inline-block;
+    margin-top: 0.9rem;
+    background: none;
+    border: 0;
+    padding: 0;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    color: var(--gold);
+    cursor: pointer;
+  }
+  .gift-copy-pix:hover { color: var(--foreground); }
+  .gift-qr-hint {
+    margin: 0.35rem 0 0;
+    font-size: 0.68rem;
+    color: var(--muted-foreground);
+  }
+  .gift-disclaimer {
+    margin: 1rem 0 0;
+    font-size: 0.62rem;
+    line-height: 1.5;
+    color: var(--muted-foreground);
+    opacity: 0.85;
   }
 
   footer {
@@ -1238,14 +1592,14 @@ a {
         <p class="name">Presentes Mickey</p>
         <p class="go">Acessar →</p>
       </a>
-      <a class="gift-card" href="#" target="_blank" rel="noopener noreferrer">
+      <a class="gift-card" href="presente-nathalie.pdf" target="_blank" rel="noopener noreferrer">
         <p class="label">Lista 3</p>
         <p class="name">Nathalie</p>
         <p class="go">Acessar →</p>
       </a>
-      <a class="gift-card" href="https://www.casar.com/" target="_blank" rel="noopener noreferrer">
-        <p class="label">Lista 4</p>
-        <p class="name">Casar.com</p>
+      <a class="gift-card" id="noivosCard" href="presentes-noivos.html">
+        <p class="label">Presentes</p>
+        <p class="name">Presentes Noivos</p>
         <p class="go">Acessar →</p>
       </a>
     </div>
@@ -1258,6 +1612,76 @@ a {
         <span class="pix-actions-sep">·</span>
         <button type="button" id="pixRecadoBtn">Recado aos noivos</button>
       </div>
+    </div>
+
+    <!-- Presentes avulsos (exemplos) - caixa com 9 opções de visual,
+         mesmo switcher "Trocar" do teste-caixa.html (Modoeditor). Padrão
+         = opção 08 (igual ao que já tínhamos). Troque nome/descrição/valor
+         pelos presentes reais e ligue o botão "Presentear" à ação desejada
+         (Pix, link, formulário etc.). Só aparece quando o botão "Presentes
+         noivos" está ligado. -->
+    <div class="cash-gifts" id="cashGifts" data-gift-style="8">
+      <div class="cash-gift-grid">
+        <div class="gift">
+          <div class="gvisual"></div>
+          <div class="gbody">
+            <p class="gcat">Lua de mel</p>
+            <h3 class="gname">Passeio de barco</h3>
+            <p class="gdesc">Uma cota para um passeio inesquecível durante a lua de mel.</p>
+            <div class="gfooter">
+              <p class="gprice"><small>Cota</small><strong>R$ 300,00</strong></p>
+              <button type="button" class="ggo" data-price="300.00">Presentear</button>
+            </div>
+          </div>
+        </div>
+        <div class="gift">
+          <div class="gvisual"></div>
+          <div class="gbody">
+            <p class="gcat">Casa nova</p>
+            <h3 class="gname">Jogo de panelas</h3>
+            <p class="gdesc">Para começar a cozinhar juntos na casa nova.</p>
+            <div class="gfooter">
+              <p class="gprice"><small>Valor</small><strong>R$ 450,00</strong></p>
+              <button type="button" class="ggo" data-price="450.00">Presentear</button>
+            </div>
+          </div>
+        </div>
+        <div class="gift">
+          <div class="gvisual"></div>
+          <div class="gbody">
+            <p class="gcat">Experiência</p>
+            <h3 class="gname">Jantar a dois</h3>
+            <p class="gdesc">Uma noite especial só para comemorar o começo dessa nova fase.</p>
+            <div class="gfooter">
+              <p class="gprice"><small>Valor</small><strong>R$ 280,00</strong></p>
+              <button type="button" class="ggo" data-price="280.00">Presentear</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button type="button" id="noivosLayoutToggle" class="side-toggle" aria-pressed="false" aria-label="Alternar exibição dos presentes avulsos">
+    <span class="side-toggle-track"><span class="side-toggle-thumb"></span></span>
+    <span class="side-toggle-label">Presentes noivos</span>
+  </button>
+
+  <div class="gift-switcher" id="giftSwitcher">
+    <button type="button" class="gift-trocar" id="trocarGiftStyle" aria-haspopup="true" aria-expanded="false">
+      Trocar estilo
+      <svg viewBox="0 0 12 8" fill="none"><path d="M1 1.5 6 6.5 11 1.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+    </button>
+    <div class="gift-menu" id="menuGiftStyle" hidden role="menu">
+      <button type="button" role="menuitemradio" data-opt="1" aria-checked="false">01 · Cartão R&amp;G</button>
+      <button type="button" role="menuitemradio" data-opt="7" aria-checked="false">02 · Minimalista</button>
+      <button type="button" role="menuitemradio" data-opt="3" aria-checked="false">03 · Medalhão circular</button>
+      <button type="button" role="menuitemradio" data-opt="4" aria-checked="false">04 · Bilhete recortado</button>
+      <button type="button" role="menuitemradio" data-opt="5" aria-checked="false">05 · Postal tracejado</button>
+      <button type="button" role="menuitemradio" data-opt="6" aria-checked="false">06 · Divisor em onda</button>
+      <button type="button" role="menuitemradio" data-opt="2" aria-checked="false">07 · Painel sem foto</button>
+      <button type="button" role="menuitemradio" data-opt="8" aria-checked="true">08 · Painel centralizado (padrão)</button>
+      <button type="button" role="menuitemradio" data-opt="9" aria-checked="false">09 · Foto circular (raqueleguga)</button>
     </div>
   </div>
 </section>
@@ -1289,6 +1713,46 @@ a {
       <p class="eyebrow">Chave Pix</p>
       <h3 class="recado-thanks-title">Muito obrigado!</h3>
       <p class="recado-thanks-text">Recado enviado! Julie e Eduardo vão adorar ler. 💛</p>
+    </div>
+  </div>
+</div>
+
+<!-- Modal do "Presentear" nas caixas de presentes avulsos - mesmo fluxo do
+     raqueleguga.com.br (carrinho -> QR Pix + recado), adaptado ao layout. -->
+<div class="recado-overlay" id="giftOverlay">
+  <div class="recado-card">
+    <button type="button" class="recado-close" id="giftClose" aria-label="Fechar">✕</button>
+
+    <div id="giftStepCart">
+      <p class="eyebrow">Meu carrinho</p>
+      <h3 class="recado-title" id="giftCartName">Nome do presente</h3>
+      <p class="gift-cart-price" id="giftCartPrice">R$ 0,00</p>
+      <button type="button" class="gift-cart-remove" id="giftCartRemove">Remover</button>
+      <button type="button" class="recado-submit" id="giftCartNext">Finalizar compra</button>
+    </div>
+
+    <div id="giftStepPix" style="display:none;">
+      <p class="eyebrow">Chave Pix</p>
+      <h3 class="recado-title" id="giftPixName">Nome do presente</h3>
+      <p class="gift-cart-price" id="giftPixPrice">R$ 0,00</p>
+      <div class="gift-qr" id="giftQr"></div>
+      <button type="button" class="gift-copy-pix" id="giftCopyPix">Copiar chave Pix</button>
+      <p class="gift-qr-hint">Escaneie com o app do seu banco</p>
+      <form class="recado-form" id="giftForm">
+        <label for="giftNome">Seu nome</label>
+        <input type="text" id="giftNome" placeholder="Como você quer ser identificado" />
+        <label for="giftMensagem">Deixe seu recado</label>
+        <textarea id="giftMensagem" placeholder="Escreva uma mensagem para o casal (opcional)" rows="3"></textarea>
+        <p class="recado-form-msg" id="giftFormMsg" style="display:none;"></p>
+        <button type="submit" class="recado-submit" id="giftSubmitBtn">Já paguei, confirmar presente</button>
+      </form>
+      <p class="gift-disclaimer">Nenhum pagamento é processado nesta página — o Pix é feito direto no app do seu banco.</p>
+    </div>
+
+    <div id="giftStepThanks" style="display:none;">
+      <p class="eyebrow">Chave Pix</p>
+      <h3 class="recado-thanks-title">Muito obrigado!</h3>
+      <p class="recado-thanks-text">Presente confirmado! Julie e Eduardo vão adorar saber. 💛</p>
     </div>
   </div>
 </div>
@@ -1403,6 +1867,18 @@ a {
 </script>
 
 <script>
+/* qrcode-generator (c) 2009 Kazuhiko Arase, licenca MIT - usado para gerar o QR do Pix nas caixas de presente */
+/**
+ * Minified by jsDelivr using Terser v5.37.0.
+ * Original file: /npm/qrcode-generator@1.4.4/qrcode.js
+ *
+ * Do NOT use SRI with dynamically generated files! More information: https://www.jsdelivr.com/using-sri-with-dynamic-files
+ */
+var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],f={},c=function(t,r){o=function(t){for(var r=new Array(t),e=0;e<t;e+=1){r[e]=new Array(t);for(var n=0;n<t;n+=1)r[e][n]=null}return r}(i=4*e+17),l(0,0),l(i-7,0),l(0,i-7),s(),h(),d(t,r),e>=7&&v(t),null==a&&(a=p(e,n,u)),w(a,r)},l=function(t,r){for(var e=-1;e<=7;e+=1)if(!(t+e<=-1||i<=t+e))for(var n=-1;n<=7;n+=1)r+n<=-1||i<=r+n||(o[t+e][r+n]=0<=e&&e<=6&&(0==n||6==n)||0<=n&&n<=6&&(0==e||6==e)||2<=e&&e<=4&&2<=n&&n<=4)},h=function(){for(var t=8;t<i-8;t+=1)null==o[t][6]&&(o[t][6]=t%2==0);for(var r=8;r<i-8;r+=1)null==o[6][r]&&(o[6][r]=r%2==0)},s=function(){for(var t=B.getPatternPosition(e),r=0;r<t.length;r+=1)for(var n=0;n<t.length;n+=1){var i=t[r],a=t[n];if(null==o[i][a])for(var u=-2;u<=2;u+=1)for(var f=-2;f<=2;f+=1)o[i+u][a+f]=-2==u||2==u||-2==f||2==f||0==u&&0==f}},v=function(t){for(var r=B.getBCHTypeNumber(e),n=0;n<18;n+=1){var a=!t&&1==(r>>n&1);o[Math.floor(n/3)][n%3+i-8-3]=a}for(n=0;n<18;n+=1){a=!t&&1==(r>>n&1);o[n%3+i-8-3][Math.floor(n/3)]=a}},d=function(t,r){for(var e=n<<3|r,a=B.getBCHTypeInfo(e),u=0;u<15;u+=1){var f=!t&&1==(a>>u&1);u<6?o[u][8]=f:u<8?o[u+1][8]=f:o[i-15+u][8]=f}for(u=0;u<15;u+=1){f=!t&&1==(a>>u&1);u<8?o[8][i-u-1]=f:u<9?o[8][15-u-1+1]=f:o[8][15-u-1]=f}o[i-8][8]=!t},w=function(t,r){for(var e=-1,n=i-1,a=7,u=0,f=B.getMaskFunction(r),c=i-1;c>0;c-=2)for(6==c&&(c-=1);;){for(var g=0;g<2;g+=1)if(null==o[n][c-g]){var l=!1;u<t.length&&(l=1==(t[u]>>>a&1)),f(n,c-g)&&(l=!l),o[n][c-g]=l,-1==(a-=1)&&(u+=1,a=7)}if((n+=e)<0||i<=n){n-=e,e=-e;break}}},p=function(t,r,e){for(var n=A.getRSBlocks(t,r),o=b(),i=0;i<e.length;i+=1){var a=e[i];o.put(a.getMode(),4),o.put(a.getLength(),B.getLengthInBits(a.getMode(),t)),a.write(o)}var u=0;for(i=0;i<n.length;i+=1)u+=n[i].dataCount;if(o.getLengthInBits()>8*u)throw"code length overflow. ("+o.getLengthInBits()+">"+8*u+")";for(o.getLengthInBits()+4<=8*u&&o.put(0,4);o.getLengthInBits()%8!=0;)o.putBit(!1);for(;!(o.getLengthInBits()>=8*u||(o.put(236,8),o.getLengthInBits()>=8*u));)o.put(17,8);return function(t,r){for(var e=0,n=0,o=0,i=new Array(r.length),a=new Array(r.length),u=0;u<r.length;u+=1){var f=r[u].dataCount,c=r[u].totalCount-f;n=Math.max(n,f),o=Math.max(o,c),i[u]=new Array(f);for(var g=0;g<i[u].length;g+=1)i[u][g]=255&t.getBuffer()[g+e];e+=f;var l=B.getErrorCorrectPolynomial(c),h=k(i[u],l.getLength()-1).mod(l);for(a[u]=new Array(l.getLength()-1),g=0;g<a[u].length;g+=1){var s=g+h.getLength()-a[u].length;a[u][g]=s>=0?h.getAt(s):0}}var v=0;for(g=0;g<r.length;g+=1)v+=r[g].totalCount;var d=new Array(v),w=0;for(g=0;g<n;g+=1)for(u=0;u<r.length;u+=1)g<i[u].length&&(d[w]=i[u][g],w+=1);for(g=0;g<o;g+=1)for(u=0;u<r.length;u+=1)g<a[u].length&&(d[w]=a[u][g],w+=1);return d}(o,n)};f.addData=function(t,r){var e=null;switch(r=r||"Byte"){case"Numeric":e=M(t);break;case"Alphanumeric":e=x(t);break;case"Byte":e=m(t);break;case"Kanji":e=L(t);break;default:throw"mode:"+r}u.push(e),a=null},f.isDark=function(t,r){if(t<0||i<=t||r<0||i<=r)throw t+","+r;return o[t][r]},f.getModuleCount=function(){return i},f.make=function(){if(e<1){for(var t=1;t<40;t++){for(var r=A.getRSBlocks(t,n),o=b(),i=0;i<u.length;i++){var a=u[i];o.put(a.getMode(),4),o.put(a.getLength(),B.getLengthInBits(a.getMode(),t)),a.write(o)}var g=0;for(i=0;i<r.length;i++)g+=r[i].dataCount;if(o.getLengthInBits()<=8*g)break}e=t}c(!1,function(){for(var t=0,r=0,e=0;e<8;e+=1){c(!0,e);var n=B.getLostPoint(f);(0==e||t>n)&&(t=n,r=e)}return r}())},f.createTableTag=function(t,r){t=t||2;var e="";e+='<table style="',e+=" border-width: 0px; border-style: none;",e+=" border-collapse: collapse;",e+=" padding: 0px; margin: "+(r=void 0===r?4*t:r)+"px;",e+='">',e+="<tbody>";for(var n=0;n<f.getModuleCount();n+=1){e+="<tr>";for(var o=0;o<f.getModuleCount();o+=1)e+='<td style="',e+=" border-width: 0px; border-style: none;",e+=" border-collapse: collapse;",e+=" padding: 0px; margin: 0px;",e+=" width: "+t+"px;",e+=" height: "+t+"px;",e+=" background-color: ",e+=f.isDark(n,o)?"#000000":"#ffffff",e+=";",e+='"/>';e+="</tr>"}return e+="</tbody>",e+="</table>"},f.createSvgTag=function(t,r,e,n){var o={};"object"==typeof arguments[0]&&(t=(o=arguments[0]).cellSize,r=o.margin,e=o.alt,n=o.title),t=t||2,r=void 0===r?4*t:r,(e="string"==typeof e?{text:e}:e||{}).text=e.text||null,e.id=e.text?e.id||"qrcode-description":null,(n="string"==typeof n?{text:n}:n||{}).text=n.text||null,n.id=n.text?n.id||"qrcode-title":null;var i,a,u,c,g=f.getModuleCount()*t+2*r,l="";for(c="l"+t+",0 0,"+t+" -"+t+",0 0,-"+t+"z ",l+='<svg version="1.1" xmlns="http://www.w3.org/2000/svg"',l+=o.scalable?"":' width="'+g+'px" height="'+g+'px"',l+=' viewBox="0 0 '+g+" "+g+'" ',l+=' preserveAspectRatio="xMinYMin meet"',l+=n.text||e.text?' role="img" aria-labelledby="'+y([n.id,e.id].join(" ").trim())+'"':"",l+=">",l+=n.text?'<title id="'+y(n.id)+'">'+y(n.text)+"</title>":"",l+=e.text?'<description id="'+y(e.id)+'">'+y(e.text)+"</description>":"",l+='<rect width="100%" height="100%" fill="white" cx="0" cy="0"/>',l+='<path d="',a=0;a<f.getModuleCount();a+=1)for(u=a*t+r,i=0;i<f.getModuleCount();i+=1)f.isDark(a,i)&&(l+="M"+(i*t+r)+","+u+c);return l+='" stroke="transparent" fill="black"/>',l+="</svg>"},f.createDataURL=function(t,r){t=t||2,r=void 0===r?4*t:r;var e=f.getModuleCount()*t+2*r,n=r,o=e-r;return I(e,e,(function(r,e){if(n<=r&&r<o&&n<=e&&e<o){var i=Math.floor((r-n)/t),a=Math.floor((e-n)/t);return f.isDark(a,i)?0:1}return 1}))},f.createImgTag=function(t,r,e){t=t||2,r=void 0===r?4*t:r;var n=f.getModuleCount()*t+2*r,o="";return o+="<img",o+=' src="',o+=f.createDataURL(t,r),o+='"',o+=' width="',o+=n,o+='"',o+=' height="',o+=n,o+='"',e&&(o+=' alt="',o+=y(e),o+='"'),o+="/>"};var y=function(t){for(var r="",e=0;e<t.length;e+=1){var n=t.charAt(e);switch(n){case"<":r+="&lt;";break;case">":r+="&gt;";break;case"&":r+="&amp;";break;case'"':r+="&quot;";break;default:r+=n}}return r};return f.createASCII=function(t,r){if((t=t||1)<2)return function(t){t=void 0===t?2:t;var r,e,n,o,i,a=1*f.getModuleCount()+2*t,u=t,c=a-t,g={"██":"█","█ ":"▀"," █":"▄","  ":" "},l={"██":"▀","█ ":"▀"," █":" ","  ":" "},h="";for(r=0;r<a;r+=2){for(n=Math.floor((r-u)/1),o=Math.floor((r+1-u)/1),e=0;e<a;e+=1)i="█",u<=e&&e<c&&u<=r&&r<c&&f.isDark(n,Math.floor((e-u)/1))&&(i=" "),u<=e&&e<c&&u<=r+1&&r+1<c&&f.isDark(o,Math.floor((e-u)/1))?i+=" ":i+="█",h+=t<1&&r+1>=c?l[i]:g[i];h+="\n"}return a%2&&t>0?h.substring(0,h.length-a-1)+Array(a+1).join("▀"):h.substring(0,h.length-1)}(r);t-=1,r=void 0===r?2*t:r;var e,n,o,i,a=f.getModuleCount()*t+2*r,u=r,c=a-r,g=Array(t+1).join("██"),l=Array(t+1).join("  "),h="",s="";for(e=0;e<a;e+=1){for(o=Math.floor((e-u)/t),s="",n=0;n<a;n+=1)i=1,u<=n&&n<c&&u<=e&&e<c&&f.isDark(o,Math.floor((n-u)/t))&&(i=0),s+=i?g:l;for(o=0;o<t;o+=1)h+=s+"\n"}return h.substring(0,h.length-1)},f.renderTo2dContext=function(t,r){r=r||2;for(var e=f.getModuleCount(),n=0;n<e;n++)for(var o=0;o<e;o++)t.fillStyle=f.isDark(n,o)?"black":"white",t.fillRect(n*r,o*r,r,r)},f};t.stringToBytes=(t.stringToBytesFuncs={default:function(t){for(var r=[],e=0;e<t.length;e+=1){var n=t.charCodeAt(e);r.push(255&n)}return r}}).default,t.createStringToBytes=function(t,r){var e=function(){for(var e=S(t),n=function(){var t=e.read();if(-1==t)throw"eof";return t},o=0,i={};;){var a=e.read();if(-1==a)break;var u=n(),f=n()<<8|n();i[String.fromCharCode(a<<8|u)]=f,o+=1}if(o!=r)throw o+" != "+r;return i}(),n="?".charCodeAt(0);return function(t){for(var r=[],o=0;o<t.length;o+=1){var i=t.charCodeAt(o);if(i<128)r.push(i);else{var a=e[t.charAt(o)];"number"==typeof a?(255&a)==a?r.push(a):(r.push(a>>>8),r.push(255&a)):r.push(n)}}return r}};var r,e,n,o,i,a=1,u=2,f=4,c=8,g={L:1,M:0,Q:3,H:2},l=0,h=1,s=2,v=3,d=4,w=5,p=6,y=7,B=(r=[[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50],[6,30,54],[6,32,58],[6,34,62],[6,26,46,66],[6,26,48,70],[6,26,50,74],[6,30,54,78],[6,30,56,82],[6,30,58,86],[6,34,62,90],[6,28,50,72,94],[6,26,50,74,98],[6,30,54,78,102],[6,28,54,80,106],[6,32,58,84,110],[6,30,58,86,114],[6,34,62,90,118],[6,26,50,74,98,122],[6,30,54,78,102,126],[6,26,52,78,104,130],[6,30,56,82,108,134],[6,34,60,86,112,138],[6,30,58,86,114,142],[6,34,62,90,118,146],[6,30,54,78,102,126,150],[6,24,50,76,102,128,154],[6,28,54,80,106,132,158],[6,32,58,84,110,136,162],[6,26,54,82,110,138,166],[6,30,58,86,114,142,170]],e=1335,n=7973,i=function(t){for(var r=0;0!=t;)r+=1,t>>>=1;return r},(o={}).getBCHTypeInfo=function(t){for(var r=t<<10;i(r)-i(e)>=0;)r^=e<<i(r)-i(e);return 21522^(t<<10|r)},o.getBCHTypeNumber=function(t){for(var r=t<<12;i(r)-i(n)>=0;)r^=n<<i(r)-i(n);return t<<12|r},o.getPatternPosition=function(t){return r[t-1]},o.getMaskFunction=function(t){switch(t){case l:return function(t,r){return(t+r)%2==0};case h:return function(t,r){return t%2==0};case s:return function(t,r){return r%3==0};case v:return function(t,r){return(t+r)%3==0};case d:return function(t,r){return(Math.floor(t/2)+Math.floor(r/3))%2==0};case w:return function(t,r){return t*r%2+t*r%3==0};case p:return function(t,r){return(t*r%2+t*r%3)%2==0};case y:return function(t,r){return(t*r%3+(t+r)%2)%2==0};default:throw"bad maskPattern:"+t}},o.getErrorCorrectPolynomial=function(t){for(var r=k([1],0),e=0;e<t;e+=1)r=r.multiply(k([1,C.gexp(e)],0));return r},o.getLengthInBits=function(t,r){if(1<=r&&r<10)switch(t){case a:return 10;case u:return 9;case f:case c:return 8;default:throw"mode:"+t}else if(r<27)switch(t){case a:return 12;case u:return 11;case f:return 16;case c:return 10;default:throw"mode:"+t}else{if(!(r<41))throw"type:"+r;switch(t){case a:return 14;case u:return 13;case f:return 16;case c:return 12;default:throw"mode:"+t}}},o.getLostPoint=function(t){for(var r=t.getModuleCount(),e=0,n=0;n<r;n+=1)for(var o=0;o<r;o+=1){for(var i=0,a=t.isDark(n,o),u=-1;u<=1;u+=1)if(!(n+u<0||r<=n+u))for(var f=-1;f<=1;f+=1)o+f<0||r<=o+f||0==u&&0==f||a==t.isDark(n+u,o+f)&&(i+=1);i>5&&(e+=3+i-5)}for(n=0;n<r-1;n+=1)for(o=0;o<r-1;o+=1){var c=0;t.isDark(n,o)&&(c+=1),t.isDark(n+1,o)&&(c+=1),t.isDark(n,o+1)&&(c+=1),t.isDark(n+1,o+1)&&(c+=1),0!=c&&4!=c||(e+=3)}for(n=0;n<r;n+=1)for(o=0;o<r-6;o+=1)t.isDark(n,o)&&!t.isDark(n,o+1)&&t.isDark(n,o+2)&&t.isDark(n,o+3)&&t.isDark(n,o+4)&&!t.isDark(n,o+5)&&t.isDark(n,o+6)&&(e+=40);for(o=0;o<r;o+=1)for(n=0;n<r-6;n+=1)t.isDark(n,o)&&!t.isDark(n+1,o)&&t.isDark(n+2,o)&&t.isDark(n+3,o)&&t.isDark(n+4,o)&&!t.isDark(n+5,o)&&t.isDark(n+6,o)&&(e+=40);var g=0;for(o=0;o<r;o+=1)for(n=0;n<r;n+=1)t.isDark(n,o)&&(g+=1);return e+=Math.abs(100*g/r/r-50)/5*10},o),C=function(){for(var t=new Array(256),r=new Array(256),e=0;e<8;e+=1)t[e]=1<<e;for(e=8;e<256;e+=1)t[e]=t[e-4]^t[e-5]^t[e-6]^t[e-8];for(e=0;e<255;e+=1)r[t[e]]=e;var n={glog:function(t){if(t<1)throw"glog("+t+")";return r[t]},gexp:function(r){for(;r<0;)r+=255;for(;r>=256;)r-=255;return t[r]}};return n}();function k(t,r){if(void 0===t.length)throw t.length+"/"+r;var e=function(){for(var e=0;e<t.length&&0==t[e];)e+=1;for(var n=new Array(t.length-e+r),o=0;o<t.length-e;o+=1)n[o]=t[o+e];return n}(),n={getAt:function(t){return e[t]},getLength:function(){return e.length},multiply:function(t){for(var r=new Array(n.getLength()+t.getLength()-1),e=0;e<n.getLength();e+=1)for(var o=0;o<t.getLength();o+=1)r[e+o]^=C.gexp(C.glog(n.getAt(e))+C.glog(t.getAt(o)));return k(r,0)},mod:function(t){if(n.getLength()-t.getLength()<0)return n;for(var r=C.glog(n.getAt(0))-C.glog(t.getAt(0)),e=new Array(n.getLength()),o=0;o<n.getLength();o+=1)e[o]=n.getAt(o);for(o=0;o<t.getLength();o+=1)e[o]^=C.gexp(C.glog(t.getAt(o))+r);return k(e,0).mod(t)}};return n}var A=function(){var t=[[1,26,19],[1,26,16],[1,26,13],[1,26,9],[1,44,34],[1,44,28],[1,44,22],[1,44,16],[1,70,55],[1,70,44],[2,35,17],[2,35,13],[1,100,80],[2,50,32],[2,50,24],[4,25,9],[1,134,108],[2,67,43],[2,33,15,2,34,16],[2,33,11,2,34,12],[2,86,68],[4,43,27],[4,43,19],[4,43,15],[2,98,78],[4,49,31],[2,32,14,4,33,15],[4,39,13,1,40,14],[2,121,97],[2,60,38,2,61,39],[4,40,18,2,41,19],[4,40,14,2,41,15],[2,146,116],[3,58,36,2,59,37],[4,36,16,4,37,17],[4,36,12,4,37,13],[2,86,68,2,87,69],[4,69,43,1,70,44],[6,43,19,2,44,20],[6,43,15,2,44,16],[4,101,81],[1,80,50,4,81,51],[4,50,22,4,51,23],[3,36,12,8,37,13],[2,116,92,2,117,93],[6,58,36,2,59,37],[4,46,20,6,47,21],[7,42,14,4,43,15],[4,133,107],[8,59,37,1,60,38],[8,44,20,4,45,21],[12,33,11,4,34,12],[3,145,115,1,146,116],[4,64,40,5,65,41],[11,36,16,5,37,17],[11,36,12,5,37,13],[5,109,87,1,110,88],[5,65,41,5,66,42],[5,54,24,7,55,25],[11,36,12,7,37,13],[5,122,98,1,123,99],[7,73,45,3,74,46],[15,43,19,2,44,20],[3,45,15,13,46,16],[1,135,107,5,136,108],[10,74,46,1,75,47],[1,50,22,15,51,23],[2,42,14,17,43,15],[5,150,120,1,151,121],[9,69,43,4,70,44],[17,50,22,1,51,23],[2,42,14,19,43,15],[3,141,113,4,142,114],[3,70,44,11,71,45],[17,47,21,4,48,22],[9,39,13,16,40,14],[3,135,107,5,136,108],[3,67,41,13,68,42],[15,54,24,5,55,25],[15,43,15,10,44,16],[4,144,116,4,145,117],[17,68,42],[17,50,22,6,51,23],[19,46,16,6,47,17],[2,139,111,7,140,112],[17,74,46],[7,54,24,16,55,25],[34,37,13],[4,151,121,5,152,122],[4,75,47,14,76,48],[11,54,24,14,55,25],[16,45,15,14,46,16],[6,147,117,4,148,118],[6,73,45,14,74,46],[11,54,24,16,55,25],[30,46,16,2,47,17],[8,132,106,4,133,107],[8,75,47,13,76,48],[7,54,24,22,55,25],[22,45,15,13,46,16],[10,142,114,2,143,115],[19,74,46,4,75,47],[28,50,22,6,51,23],[33,46,16,4,47,17],[8,152,122,4,153,123],[22,73,45,3,74,46],[8,53,23,26,54,24],[12,45,15,28,46,16],[3,147,117,10,148,118],[3,73,45,23,74,46],[4,54,24,31,55,25],[11,45,15,31,46,16],[7,146,116,7,147,117],[21,73,45,7,74,46],[1,53,23,37,54,24],[19,45,15,26,46,16],[5,145,115,10,146,116],[19,75,47,10,76,48],[15,54,24,25,55,25],[23,45,15,25,46,16],[13,145,115,3,146,116],[2,74,46,29,75,47],[42,54,24,1,55,25],[23,45,15,28,46,16],[17,145,115],[10,74,46,23,75,47],[10,54,24,35,55,25],[19,45,15,35,46,16],[17,145,115,1,146,116],[14,74,46,21,75,47],[29,54,24,19,55,25],[11,45,15,46,46,16],[13,145,115,6,146,116],[14,74,46,23,75,47],[44,54,24,7,55,25],[59,46,16,1,47,17],[12,151,121,7,152,122],[12,75,47,26,76,48],[39,54,24,14,55,25],[22,45,15,41,46,16],[6,151,121,14,152,122],[6,75,47,34,76,48],[46,54,24,10,55,25],[2,45,15,64,46,16],[17,152,122,4,153,123],[29,74,46,14,75,47],[49,54,24,10,55,25],[24,45,15,46,46,16],[4,152,122,18,153,123],[13,74,46,32,75,47],[48,54,24,14,55,25],[42,45,15,32,46,16],[20,147,117,4,148,118],[40,75,47,7,76,48],[43,54,24,22,55,25],[10,45,15,67,46,16],[19,148,118,6,149,119],[18,75,47,31,76,48],[34,54,24,34,55,25],[20,45,15,61,46,16]],r=function(t,r){var e={};return e.totalCount=t,e.dataCount=r,e},e={};return e.getRSBlocks=function(e,n){var o=function(r,e){switch(e){case g.L:return t[4*(r-1)+0];case g.M:return t[4*(r-1)+1];case g.Q:return t[4*(r-1)+2];case g.H:return t[4*(r-1)+3];default:return}}(e,n);if(void 0===o)throw"bad rs block @ typeNumber:"+e+"/errorCorrectionLevel:"+n;for(var i=o.length/3,a=[],u=0;u<i;u+=1)for(var f=o[3*u+0],c=o[3*u+1],l=o[3*u+2],h=0;h<f;h+=1)a.push(r(c,l));return a},e}(),b=function(){var t=[],r=0,e={getBuffer:function(){return t},getAt:function(r){var e=Math.floor(r/8);return 1==(t[e]>>>7-r%8&1)},put:function(t,r){for(var n=0;n<r;n+=1)e.putBit(1==(t>>>r-n-1&1))},getLengthInBits:function(){return r},putBit:function(e){var n=Math.floor(r/8);t.length<=n&&t.push(0),e&&(t[n]|=128>>>r%8),r+=1}};return e},M=function(t){var r=a,e=t,n={getMode:function(){return r},getLength:function(t){return e.length},write:function(t){for(var r=e,n=0;n+2<r.length;)t.put(o(r.substring(n,n+3)),10),n+=3;n<r.length&&(r.length-n==1?t.put(o(r.substring(n,n+1)),4):r.length-n==2&&t.put(o(r.substring(n,n+2)),7))}},o=function(t){for(var r=0,e=0;e<t.length;e+=1)r=10*r+i(t.charAt(e));return r},i=function(t){if("0"<=t&&t<="9")return t.charCodeAt(0)-"0".charCodeAt(0);throw"illegal char :"+t};return n},x=function(t){var r=u,e=t,n={getMode:function(){return r},getLength:function(t){return e.length},write:function(t){for(var r=e,n=0;n+1<r.length;)t.put(45*o(r.charAt(n))+o(r.charAt(n+1)),11),n+=2;n<r.length&&t.put(o(r.charAt(n)),6)}},o=function(t){if("0"<=t&&t<="9")return t.charCodeAt(0)-"0".charCodeAt(0);if("A"<=t&&t<="Z")return t.charCodeAt(0)-"A".charCodeAt(0)+10;switch(t){case" ":return 36;case"$":return 37;case"%":return 38;case"*":return 39;case"+":return 40;case"-":return 41;case".":return 42;case"/":return 43;case":":return 44;default:throw"illegal char :"+t}};return n},m=function(r){var e=f,n=t.stringToBytes(r),o={getMode:function(){return e},getLength:function(t){return n.length},write:function(t){for(var r=0;r<n.length;r+=1)t.put(n[r],8)}};return o},L=function(r){var e=c,n=t.stringToBytesFuncs.SJIS;if(!n)throw"sjis not supported.";!function(){var t=n("友");if(2!=t.length||38726!=(t[0]<<8|t[1]))throw"sjis not supported."}();var o=n(r),i={getMode:function(){return e},getLength:function(t){return~~(o.length/2)},write:function(t){for(var r=o,e=0;e+1<r.length;){var n=(255&r[e])<<8|255&r[e+1];if(33088<=n&&n<=40956)n-=33088;else{if(!(57408<=n&&n<=60351))throw"illegal char at "+(e+1)+"/"+n;n-=49472}n=192*(n>>>8&255)+(255&n),t.put(n,13),e+=2}if(e<r.length)throw"illegal char at "+(e+1)}};return i},D=function(){var t=[],r={writeByte:function(r){t.push(255&r)},writeShort:function(t){r.writeByte(t),r.writeByte(t>>>8)},writeBytes:function(t,e,n){e=e||0,n=n||t.length;for(var o=0;o<n;o+=1)r.writeByte(t[o+e])},writeString:function(t){for(var e=0;e<t.length;e+=1)r.writeByte(t.charCodeAt(e))},toByteArray:function(){return t},toString:function(){var r="";r+="[";for(var e=0;e<t.length;e+=1)e>0&&(r+=","),r+=t[e];return r+="]"}};return r},S=function(t){var r=t,e=0,n=0,o=0,i={read:function(){for(;o<8;){if(e>=r.length){if(0==o)return-1;throw"unexpected end of file./"+o}var t=r.charAt(e);if(e+=1,"="==t)return o=0,-1;t.match(/^\s$/)||(n=n<<6|a(t.charCodeAt(0)),o+=6)}var i=n>>>o-8&255;return o-=8,i}},a=function(t){if(65<=t&&t<=90)return t-65;if(97<=t&&t<=122)return t-97+26;if(48<=t&&t<=57)return t-48+52;if(43==t)return 62;if(47==t)return 63;throw"c:"+t};return i},I=function(t,r,e){for(var n=function(t,r){var e=t,n=r,o=new Array(t*r),i={setPixel:function(t,r,n){o[r*e+t]=n},write:function(t){t.writeString("GIF87a"),t.writeShort(e),t.writeShort(n),t.writeByte(128),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(255),t.writeByte(255),t.writeByte(255),t.writeString(","),t.writeShort(0),t.writeShort(0),t.writeShort(e),t.writeShort(n),t.writeByte(0);var r=a(2);t.writeByte(2);for(var o=0;r.length-o>255;)t.writeByte(255),t.writeBytes(r,o,255),o+=255;t.writeByte(r.length-o),t.writeBytes(r,o,r.length-o),t.writeByte(0),t.writeString(";")}},a=function(t){for(var r=1<<t,e=1+(1<<t),n=t+1,i=u(),a=0;a<r;a+=1)i.add(String.fromCharCode(a));i.add(String.fromCharCode(r)),i.add(String.fromCharCode(e));var f,c,g,l=D(),h=(f=l,c=0,g=0,{write:function(t,r){if(t>>>r!=0)throw"length over";for(;c+r>=8;)f.writeByte(255&(t<<c|g)),r-=8-c,t>>>=8-c,g=0,c=0;g|=t<<c,c+=r},flush:function(){c>0&&f.writeByte(g)}});h.write(r,n);var s=0,v=String.fromCharCode(o[s]);for(s+=1;s<o.length;){var d=String.fromCharCode(o[s]);s+=1,i.contains(v+d)?v+=d:(h.write(i.indexOf(v),n),i.size()<4095&&(i.size()==1<<n&&(n+=1),i.add(v+d)),v=d)}return h.write(i.indexOf(v),n),h.write(e,n),h.flush(),l.toByteArray()},u=function(){var t={},r=0,e={add:function(n){if(e.contains(n))throw"dup key:"+n;t[n]=r,r+=1},size:function(){return r},indexOf:function(r){return t[r]},contains:function(r){return void 0!==t[r]}};return e};return i}(t,r),o=0;o<r;o+=1)for(var i=0;i<t;i+=1)n.setPixel(i,o,e(i,o));var a=D();n.write(a);for(var u=function(){var t=0,r=0,e=0,n="",o={},i=function(t){n+=String.fromCharCode(a(63&t))},a=function(t){if(t<0);else{if(t<26)return 65+t;if(t<52)return t-26+97;if(t<62)return t-52+48;if(62==t)return 43;if(63==t)return 47}throw"n:"+t};return o.writeByte=function(n){for(t=t<<8|255&n,r+=8,e+=1;r>=6;)i(t>>>r-6),r-=6},o.flush=function(){if(r>0&&(i(t<<6-r),t=0,r=0),e%3!=0)for(var o=3-e%3,a=0;a<o;a+=1)n+="="},o.toString=function(){return n},o}(),f=a.toByteArray(),c=0;c<f.length;c+=1)u.writeByte(f[c]);return u.flush(),"data:image/gif;base64,"+u};return t}();qrcode.stringToBytesFuncs["UTF-8"]=function(t){return function(t){for(var r=[],e=0;e<t.length;e++){var n=t.charCodeAt(e);n<128?r.push(n):n<2048?r.push(192|n>>6,128|63&n):n<55296||n>=57344?r.push(224|n>>12,128|n>>6&63,128|63&n):(e++,n=65536+((1023&n)<<10|1023&t.charCodeAt(e)),r.push(240|n>>18,128|n>>12&63,128|n>>6&63,128|63&n))}return r}(t)},function(t){"function"==typeof define&&define.amd?define([],t):"object"==typeof exports&&(module.exports=t())}((function(){return qrcode}));
+
+</script>
+
+<script>
   const header = document.getElementById('siteHeader');
   const menuToggle = document.getElementById('menuToggle');
   const mobileMenu = document.getElementById('mobileMenu');
@@ -1417,6 +1893,60 @@ a {
     mobileMenu.classList.toggle('is-open');
     menuToggle.textContent = mobileMenu.classList.contains('is-open') ? '✕' : '☰';
   });
+
+  const noivosLayoutToggle = document.getElementById('noivosLayoutToggle');
+  noivosLayoutToggle.addEventListener('click', () => {
+    const isOn = document.documentElement.getAttribute('data-noivos-layout') === 'on';
+    if (isOn) {
+      document.documentElement.removeAttribute('data-noivos-layout');
+      noivosLayoutToggle.setAttribute('aria-pressed', 'false');
+    } else {
+      document.documentElement.setAttribute('data-noivos-layout', 'on');
+      noivosLayoutToggle.setAttribute('aria-pressed', 'true');
+    }
+  });
+
+  // ---------- Presentes avulsos: switcher "Trocar" (mesma função do teste-caixa.html) ----------
+  (function () {
+    const trocarGift = document.getElementById('trocarGiftStyle');
+    const menuGift = document.getElementById('menuGiftStyle');
+    const hintGift = document.getElementById('hintGiftStyle');
+    const cashGifts = document.getElementById('cashGifts');
+    if (!trocarGift || !menuGift || !cashGifts) return;
+
+    const hints = {
+      '1': 'Cartão com foto, moldura interna e zoom leve — a réplica do R&G.',
+      '2': 'Sem foto: painel liso que preenche com a cor de destaque ao passar o mouse.',
+      '3': 'Foto vira um medalhão redondo, conteúdo centralizado abaixo.',
+      '4': 'Bilhete de cantos recortados, preenche ao passar o mouse.',
+      '5': 'Borda tracejada e selo postal — como um cartão-postal.',
+      '6': 'Divisor em onda separa a foto do corpo do cartão.',
+      '7': 'Minimalista: sem borda, com sublinhado no nome e botão contornado.',
+      '8': 'Texto centralizado, botão "Presentear" vira um link simples, e o cartão inteiro inverte pra cor de destaque ao passar o mouse.',
+      '9': 'Foto circular sobre quadro 1:1, nome itálico, categoria e preço em mono, botão sólido cor cobre.'
+    };
+
+    function openGiftMenu(open) {
+      menuGift.hidden = !open;
+      trocarGift.setAttribute('aria-expanded', String(open));
+    }
+    trocarGift.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openGiftMenu(menuGift.hidden);
+    });
+    document.addEventListener('click', () => openGiftMenu(false));
+    menuGift.addEventListener('click', (e) => e.stopPropagation());
+
+    menuGift.querySelectorAll('button').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const opt = btn.getAttribute('data-opt');
+        menuGift.querySelectorAll('button').forEach((b) => b.setAttribute('aria-checked', String(b === btn)));
+        cashGifts.setAttribute('data-gift-style', opt);
+        if (hintGift) hintGift.textContent = hints[opt];
+        openGiftMenu(false);
+      });
+    });
+  })();
 
   document.querySelectorAll('[data-target]').forEach((btn) => {
     btn.addEventListener('click', () => {
@@ -1506,6 +2036,174 @@ a {
         recadoSubmitBtn.textContent = 'Enviar recado';
       });
   });
+
+  // ---------- Presentear (caixas "Outras ideias"): carrinho -> QR Pix + recado ----------
+  // Mesmo fluxo do raqueleguga.com.br, adaptado ao layout do site.
+  (function () {
+    const PIX_KEY = 'julieedu@gmail.com';
+    // Nome/cidade do titular da chave Pix, exigidos pelo padrão do Banco Central
+    // para montar o QR Code. Edite se quiser outro nome/cidade no QR.
+    const PIX_MERCHANT_NAME = 'JULIE E EDUARDO';
+    const PIX_MERCHANT_CITY = 'SAO PAULO';
+
+    function pixTLV(id, value) {
+      const len = String(value.length).padStart(2, '0');
+      return id + len + value;
+    }
+    function pixCRC16(payload) {
+      let crc = 0xFFFF;
+      for (let i = 0; i < payload.length; i++) {
+        crc ^= payload.charCodeAt(i) << 8;
+        for (let j = 0; j < 8; j++) {
+          crc = (crc & 0x8000) ? ((crc << 1) ^ 0x1021) & 0xFFFF : (crc << 1) & 0xFFFF;
+        }
+      }
+      return crc.toString(16).toUpperCase().padStart(4, '0');
+    }
+    function buildPixPayload(amount, txid) {
+      const merchantAccount = pixTLV('00', 'br.gov.bcb.pix') + pixTLV('01', PIX_KEY);
+      const cleanTxid = (txid || 'PRESENTE').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-zA-Z0-9]/g, '').slice(0, 25) || '***';
+      const additionalData = pixTLV('05', cleanTxid);
+      let payload =
+        pixTLV('00', '01') +
+        pixTLV('26', merchantAccount) +
+        pixTLV('52', '0000') +
+        pixTLV('53', '986') +
+        pixTLV('54', Number(amount).toFixed(2)) +
+        pixTLV('58', 'BR') +
+        pixTLV('59', PIX_MERCHANT_NAME.slice(0, 25)) +
+        pixTLV('60', PIX_MERCHANT_CITY.slice(0, 15)) +
+        pixTLV('62', additionalData);
+      payload += '6304';
+      return payload + pixCRC16(payload);
+    }
+
+    const giftOverlay = document.getElementById('giftOverlay');
+    if (!giftOverlay) return;
+    const giftStepCart = document.getElementById('giftStepCart');
+    const giftStepPix = document.getElementById('giftStepPix');
+    const giftStepThanks = document.getElementById('giftStepThanks');
+    const giftClose = document.getElementById('giftClose');
+    const giftCartName = document.getElementById('giftCartName');
+    const giftCartPrice = document.getElementById('giftCartPrice');
+    const giftCartRemove = document.getElementById('giftCartRemove');
+    const giftCartNext = document.getElementById('giftCartNext');
+    const giftPixName = document.getElementById('giftPixName');
+    const giftPixPrice = document.getElementById('giftPixPrice');
+    const giftQr = document.getElementById('giftQr');
+    const giftCopyPix = document.getElementById('giftCopyPix');
+    const giftForm = document.getElementById('giftForm');
+    const giftNomeInput = document.getElementById('giftNome');
+    const giftMensagemInput = document.getElementById('giftMensagem');
+    const giftFormMsg = document.getElementById('giftFormMsg');
+    const giftSubmitBtn = document.getElementById('giftSubmitBtn');
+
+    let currentGift = null;
+
+    function formatBRL(value) {
+      return 'R$ ' + Number(value).toFixed(2).replace('.', ',');
+    }
+
+    function openGiftStep(step) {
+      giftStepCart.style.display = step === 'cart' ? 'block' : 'none';
+      giftStepPix.style.display = step === 'pix' ? 'block' : 'none';
+      giftStepThanks.style.display = step === 'thanks' ? 'block' : 'none';
+    }
+
+    function closeGiftOverlay() {
+      giftOverlay.classList.remove('is-open');
+    }
+
+    document.querySelectorAll('.cash-gift-grid .ggo').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const giftEl = btn.closest('.gift');
+        const name = giftEl.querySelector('.gname')?.textContent.trim() || 'Presente';
+        const price = parseFloat(btn.getAttribute('data-price') || '0');
+        currentGift = { name, price };
+
+        giftCartName.textContent = name;
+        giftCartPrice.textContent = formatBRL(price);
+        giftNomeInput.value = '';
+        giftMensagemInput.value = '';
+        giftFormMsg.style.display = 'none';
+        giftSubmitBtn.disabled = false;
+        giftSubmitBtn.textContent = 'Já paguei, confirmar presente';
+        openGiftStep('cart');
+        giftOverlay.classList.add('is-open');
+      });
+    });
+
+    giftClose.addEventListener('click', closeGiftOverlay);
+    giftOverlay.addEventListener('click', (e) => {
+      if (e.target === giftOverlay) closeGiftOverlay();
+    });
+    giftCartRemove.addEventListener('click', closeGiftOverlay);
+
+    giftCartNext.addEventListener('click', () => {
+      if (!currentGift) return;
+      giftPixName.textContent = currentGift.name;
+      giftPixPrice.textContent = formatBRL(currentGift.price);
+
+      const payload = buildPixPayload(currentGift.price, currentGift.name);
+      giftQr.innerHTML = '';
+      const qr = qrcode(0, 'M');
+      qr.addData(payload);
+      qr.make();
+      giftQr.innerHTML = qr.createSvgTag({ cellSize: 5, margin: 2, scalable: true });
+
+      openGiftStep('pix');
+    });
+
+    giftCopyPix.addEventListener('click', () => {
+      navigator.clipboard?.writeText(PIX_KEY);
+      const original = giftCopyPix.textContent;
+      giftCopyPix.textContent = 'Chave copiada!';
+      setTimeout(() => { giftCopyPix.textContent = original; }, 1800);
+    });
+
+    function showGiftMsg(text, isError) {
+      giftFormMsg.textContent = text;
+      giftFormMsg.classList.toggle('is-error', !!isError);
+      giftFormMsg.style.display = 'block';
+    }
+
+    giftForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (!currentGift) return;
+      const nome = giftNomeInput.value.trim();
+      const recado = giftMensagemInput.value.trim();
+
+      if (!nome) {
+        showGiftMsg('Por favor, preencha seu nome antes de enviar.', true);
+        giftNomeInput.focus();
+        return;
+      }
+      giftFormMsg.style.display = 'none';
+      giftSubmitBtn.disabled = true;
+      giftSubmitBtn.textContent = 'Enviando...';
+
+      fetch(RECADO_WEBAPP_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({
+          nome: nome,
+          recado: recado,
+          presente: currentGift.name + ' (' + formatBRL(currentGift.price) + ') — Pix'
+        })
+      })
+        .then(() => {
+          openGiftStep('thanks');
+        })
+        .catch(() => {
+          showGiftMsg('Não foi possível enviar agora. Verifique sua conexão e tente novamente.', true);
+        })
+        .finally(() => {
+          giftSubmitBtn.disabled = false;
+          giftSubmitBtn.textContent = 'Já paguei, confirmar presente';
+        });
+    });
+  })();
 
   // ---------- Contagem regressiva ----------
   // Ajuste o horário exato da cerimônia quando souberem (hoje está 18h, horário de Brasília).
